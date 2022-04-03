@@ -1,0 +1,99 @@
+#################
+# ROUTING
+#################
+
+server.port: ${SERVER_PORT:8090}
+
+#################
+# GENERAL
+#################
+
+spring:
+  data:
+    # Rest
+    rest.base-path: /api
+    # Mongo
+    mongodb.database: igordonin
+  # MySQL
+  datasource:
+    url: ${DB_HOST:jdbc:mysql://localhost:3306/igordonin?serverTimezone=America/Sao_Paulo}
+    username: ${DB_USER:igordonin}
+    password: ${DB_PASSWORD:1g0r@!D0n1n}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    test-on-borrow: true
+    validation-query: SELECT 1
+  # JPA
+  jpa:
+    hibernate.naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: false
+  # Liquibase
+  liquibase.enabled: false
+  # Jackson
+  jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
+
+#################
+# LOGGING
+#################
+
+logging:
+  level:
+    com.igordonin.template.springtemplate: INFO
+    org.springframework.security: INFO
+
+---
+
+spring:
+  profiles: prod
+  data:
+    # Mongo
+    mongodb:
+      host: ${MONGODB_HOST}
+      port: ${MONGODB_PORT}
+      username: ${MONGODB_USERNAME}
+      password: ${MONGODB_PASSWORD}
+
+---
+
+spring:
+  profiles: staging
+
+---
+
+spring:
+  profiles: dev
+  datasource:
+    hikari.leak-detection-threshold: 10000
+  jpa.show-sql: true
+  # Liquibase
+  liquibase:
+    url: ${DB_HOST:jdbc:mysql://localhost:3306/igordonin?serverTimezone=America/Sao_Paulo}
+    user: ${DB_USER:igordonin}
+    password: ${DB_PASSWORD:1g0r@!D0n1n}
+    change-log: classpath:/db/changelog.yml
+    enabled: true
+    contexts: dev
+
+---
+
+spring:
+  profiles: test, integration-test
+  datasource:
+    hikari.leak-detection-threshold: 10000
+  jpa.show-sql: true
+  # Liquibase
+  liquibase:
+    url: ${DB_HOST:jdbc:mysql://localhost:3306/igordonin_test?serverTimezone=America/Sao_Paulo}
+    user: ${DB_USER:igordonin}
+    password: ${DB_PASSWORD:1g0r@!D0n1n}
+    change-log: classpath:/db/changelog.yml
+    enabled: true
+    contexts: test, integration-test
+  mail.debug: true
+
+dbunit.schema: igordonin_test
+
+logging.level:
+  com.igordonin.template.springtemplate: DEBUG
+  com.zaxxer.hikari: OFF
+  org.springframework.security: DEBUG

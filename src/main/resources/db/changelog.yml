@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: migrations/Test_Migrations.xml
+      relativeToChangelogFile: true
+
+  ## Load Seed must always be the last item
+  - include:
+      file: migrations/Load_Seed.xml
+      relativeToChangelogFile: true
